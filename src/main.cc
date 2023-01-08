@@ -3,7 +3,7 @@
 
 #include "api/include.h"
 
-#include "network.h"
+#include "dqnNetwork.h"
 #include "runtime.h"
 
 int main() {
