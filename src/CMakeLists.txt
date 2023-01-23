@@ -7,3 +7,6 @@ set(SRC_DSL ${SRC_DSL} PARENT_SCOPE)
 
 add_subdirectory(api)
 set(SRC_API ${SRC_API} PARENT_SCOPE)
+
+add_subdirectory(ppo)
+set(SRC_PPO ${SRC_PPO} PARENT_SCOPE)

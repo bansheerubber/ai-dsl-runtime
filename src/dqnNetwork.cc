@@ -5,8 +5,8 @@
 
 DQNNetwork::DQNNetwork(std::string functionName, unsigned int inputCount, unsigned int outputCount) {
 	this->layers[0] = register_module("layer1", torch::nn::Linear(inputCount, 128));
-	this->layers[1] = register_module("layer1", torch::nn::Linear(128, 128));
-	this->layers[2] = register_module("layer1", torch::nn::Linear(128, outputCount));
+	this->layers[1] = register_module("layer2", torch::nn::Linear(128, 128));
+	this->layers[2] = register_module("layer3", torch::nn::Linear(128, outputCount));
 
 	this->inputCount = inputCount;
 	this->outputCount = outputCount;
