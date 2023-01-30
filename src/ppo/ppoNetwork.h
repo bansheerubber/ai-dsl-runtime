@@ -12,29 +12,30 @@ public:
 	PPONetwork(
 		unsigned int inputCount,
 		unsigned int outputCount,
-		double actorLearningRate,
-		double criticLearningRate,
-		double gamma,
+		float actorLearningRate,
+		float criticLearningRate,
+		float gamma,
 		unsigned int epochs,
-		double clip,
-		double actionStd
+		float clip,
+		float actionStd
 	);
 
-	void setActionStd(double std);
-	void decayActionStd(double decayRate, double minimum);
+	void setActionStd(float std);
+	float decayActionStd(float decayRate, float minimum);
 	torch::Tensor selectAction(torch::Tensor &state);
+	ActResult predict(torch::Tensor &state);
 	void update();
 
-	void singleTrain(double reward, bool isTerminal);
-	void train(double reward, bool isTerminal);
+	void singleTrain(float reward, bool isTerminal);
+	void train(float reward, bool isTerminal);
 
 private:
-	double clip;
-	double gamma;
+	float clip;
+	float gamma;
 	unsigned int epochs;
 	RolloutBuffer buffer;
 
-	double actionStd;
+	float actionStd;
 
 	std::shared_ptr<ActorCritic> policy;
 	std::shared_ptr<ActorCritic> oldPolicy;

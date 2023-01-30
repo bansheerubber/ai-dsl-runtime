@@ -18,9 +18,9 @@ struct EvaluateResult {
 class ActorCritic : public torch::nn::Cloneable<ActorCritic> {
 public:
 	ActorCritic() {}
-	ActorCritic(unsigned int inputCount, unsigned int outputCount, double initStd);
+	ActorCritic(unsigned int inputCount, unsigned int outputCount, float initStd);
 
-	void setActionStd(double std);
+	void setActionStd(float std);
 	ActResult act(torch::Tensor &state);
 	EvaluateResult evaluate(torch::Tensor &state, torch::Tensor &action);
 

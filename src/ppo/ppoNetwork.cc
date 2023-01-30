@@ -3,12 +3,12 @@
 PPONetwork::PPONetwork(
 	unsigned int inputCount,
 	unsigned int outputCount,
-	double actorLearningRate,
-	double criticLearningRate,
-	double gamma,
+	float actorLearningRate,
+	float criticLearningRate,
+	float gamma,
 	unsigned int epochs,
-	double clip,
-	double actionStd
+	float clip,
+	float actionStd
 ) {
 	this->gamma = gamma;
 	this->clip = clip;
@@ -31,13 +31,13 @@ PPONetwork::PPONetwork(
 	this->oldPolicy->to(torch::Device(torch::kCUDA, 0));
 }
 
-void PPONetwork::setActionStd(double std) {
+void PPONetwork::setActionStd(float std) {
 	this->actionStd = std;
 	this->policy->setActionStd(std);
 	this->oldPolicy->setActionStd(std);
 }
 
-void PPONetwork::decayActionStd(double decayRate, double minimum) {
+float PPONetwork::decayActionStd(float decayRate, float minimum) {
 	this->actionStd = this->actionStd - decayRate;
 	// TODO round action STD
 
@@ -46,6 +46,8 @@ void PPONetwork::decayActionStd(double decayRate, double minimum) {
 	}
 
 	this->setActionStd(this->actionStd);
+
+	return this->actionStd;
 }
 
 torch::Tensor PPONetwork::selectAction(torch::Tensor &state) {
@@ -63,9 +65,13 @@ torch::Tensor PPONetwork::selectAction(torch::Tensor &state) {
 	return act.action.detach();
 }
 
+ActResult PPONetwork::predict(torch::Tensor &state) {
+	return this->policy->act(state);
+}
+
 void PPONetwork::update() {
-	std::vector<double> rewards;
-	double discontinuedReward = 0.0;
+	std::vector<float> rewards;
+	float discontinuedReward = 0.0;
 	for (int64_t i = this->buffer.rewards.size() - 1; i >= 0; i--) {
 		if (this->buffer.isTerminals[i]) {
 			discontinuedReward = 0.0;
@@ -75,8 +81,8 @@ void PPONetwork::update() {
 		rewards.insert(rewards.begin(), discontinuedReward);
 	}
 
-	auto options = torch::TensorOptions().dtype(torch::kFloat64);
-	torch::Tensor rewardsTensor = torch::from_blob(rewards.data(), { (long)rewards.size() }, options).to(torch::kFloat32);
+	auto options = torch::TensorOptions().dtype(torch::kFloat32);
+	torch::Tensor rewardsTensor = torch::from_blob(rewards.data(), { (long)rewards.size() }, options);
 	rewardsTensor = (rewardsTensor - rewardsTensor.mean()) / (rewardsTensor.std() + 1e-7);
 	rewardsTensor = rewardsTensor.to(torch::Device(torch::kCUDA, 0));
 
@@ -117,13 +123,13 @@ void PPONetwork::update() {
 	this->buffer.isTerminals.clear();
 }
 
-void PPONetwork::singleTrain(double reward, bool isTerminal) {
+void PPONetwork::singleTrain(float reward, bool isTerminal) {
 	this->buffer.rewards.push_back(reward);
 	this->buffer.isTerminals.push_back(isTerminal);
 }
 
 // use the current buffer state for backpropagation
-void PPONetwork::train(double reward, bool isTerminal) {
+void PPONetwork::train(float reward, bool isTerminal) {
 	// TODO optimize this
 	for (size_t i = 0; i < this->buffer.actions.size(); i++) {
 		this->buffer.rewards.push_back(reward);

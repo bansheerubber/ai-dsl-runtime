@@ -2,7 +2,7 @@
 
 #include "../multivariateNormal.h"
 
-ActorCritic::ActorCritic(unsigned int inputCount, unsigned int outputCount, double initStd) {
+ActorCritic::ActorCritic(unsigned int inputCount, unsigned int outputCount, float initStd) {
 	this->inputCount = inputCount;
 	this->outputCount = outputCount;
 
@@ -27,7 +27,7 @@ ActorCritic::ActorCritic(unsigned int inputCount, unsigned int outputCount, doub
 	register_module("sequential2", this->critic);
 }
 
-void ActorCritic::setActionStd(double std) {
+void ActorCritic::setActionStd(float std) {
 	this->actionVariance = torch::full({ this->outputCount }, std * std).to(torch::Device(torch::kCUDA, 0));
 }
 
@@ -69,9 +69,7 @@ EvaluateResult ActorCritic::evaluate(torch::Tensor &state, torch::Tensor &action
 void ActorCritic::reset() {
 	this->actor = torch::nn::Sequential(
 		torch::nn::Linear(inputCount, 64),
-		torch::nn::Tanh(),
 		torch::nn::Linear(64, 64),
-		torch::nn::Tanh(),
 		torch::nn::Linear(64, outputCount)
 	);
 	register_module("sequential1", this->actor);
@@ -79,9 +77,7 @@ void ActorCritic::reset() {
 
 	this->critic = torch::nn::Sequential(
 		torch::nn::Linear(inputCount, 64),
-		torch::nn::Tanh(),
 		torch::nn::Linear(64, 64),
-		torch::nn::Tanh(),
 		torch::nn::Linear(64, 1)
 	);
 	register_module("sequential2", this->critic);
