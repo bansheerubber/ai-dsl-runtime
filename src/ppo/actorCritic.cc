@@ -36,7 +36,7 @@ ActResult ActorCritic::act(torch::Tensor &state) {
 	torch::Tensor coVariance = torch::diag(this->actionVariance).unsqueeze(0);
 
 	// get action from normal distribution
-	MultivariateNormal distribution =  MultivariateNormal(actionMean, coVariance);
+	MultivariateNormal distribution = MultivariateNormal(actionMean, coVariance);
 	torch::Tensor action = distribution.sample();
 	torch::Tensor probability = distribution.logProbability(action);
 
@@ -53,7 +53,7 @@ EvaluateResult ActorCritic::evaluate(torch::Tensor &state, torch::Tensor &action
 	torch::Tensor actionVariance = this->actionVariance.expand_as(actionMean);
 	torch::Tensor coVariance = torch::diag_embed(actionVariance).to(torch::Device(torch::kCUDA, 0));
 
-	MultivariateNormal distribution =  MultivariateNormal(actionMean, coVariance);
+	MultivariateNormal distribution = MultivariateNormal(actionMean, coVariance);
 
 	if (this->outputCount == 1) {
 		action = action.reshape({ -1, this->outputCount });

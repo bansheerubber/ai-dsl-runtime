@@ -23,11 +23,17 @@ public:
 	void setActionStd(float std);
 	float decayActionStd(float decayRate, float minimum);
 	torch::Tensor selectAction(torch::Tensor &state);
-	ActResult predict(torch::Tensor &state);
+	torch::Tensor predict(torch::Tensor &state);
 	void update();
 
 	void singleTrain(float reward, bool isTerminal);
 	void train(float reward, bool isTerminal);
+
+	void setActorLearningRate(float learningRate);
+	void setCriticLearningRate(float learningRate);
+
+	void save(std::string filename);
+	void load(std::string filename);
 
 private:
 	float clip;

@@ -65,8 +65,8 @@ torch::Tensor PPONetwork::selectAction(torch::Tensor &state) {
 	return act.action.detach();
 }
 
-ActResult PPONetwork::predict(torch::Tensor &state) {
-	return this->policy->act(state);
+torch::Tensor PPONetwork::predict(torch::Tensor &state) {
+	return this->policy->act(state).action;
 }
 
 void PPONetwork::update() {
@@ -139,4 +139,36 @@ void PPONetwork::train(float reward, bool isTerminal) {
 	// TODO decay action STD
 
 	this->update();
+}
+
+void PPONetwork::setActorLearningRate(float learningRate) {
+	this->actorOptimizer = new torch::optim::Adam(
+		this->policy->actor.get()->parameters(), torch::optim::AdamOptions(learningRate)
+	);
+}
+
+void PPONetwork::setCriticLearningRate(float learningRate) {
+	this->criticOptimizer = new torch::optim::Adam(
+		this->policy->actor.get()->parameters(), torch::optim::AdamOptions(learningRate)
+	);
+}
+
+void PPONetwork::save(std::string filename) {
+	torch::serialize::OutputArchive policyOutput;
+	this->policy->save(policyOutput);
+	policyOutput.save_to(filename + ".policy");
+
+	torch::serialize::OutputArchive oldPolicyOutput;
+	this->oldPolicy->save(oldPolicyOutput);
+	oldPolicyOutput.save_to(filename + ".old-policy");
+}
+
+void PPONetwork::load(std::string filename) {
+	torch::serialize::InputArchive policyInput;
+	policyInput.load_from(filename + ".policy");
+	this->policy->load(policyInput);
+
+	torch::serialize::InputArchive oldPolicyInput;
+	oldPolicyInput.load_from(filename + ".old-policy");
+	this->oldPolicy->load(oldPolicyInput);
 }
