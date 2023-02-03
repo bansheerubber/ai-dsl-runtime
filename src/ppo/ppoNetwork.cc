@@ -1,6 +1,7 @@
 #include "ppoNetwork.h"
 
 PPONetwork::PPONetwork(
+	std::string functioName,
 	unsigned int inputCount,
 	unsigned int outputCount,
 	float actorLearningRate,
@@ -15,6 +16,8 @@ PPONetwork::PPONetwork(
 	this->epochs = epochs;
 
 	this->actionStd = actionStd;
+
+	this->functionName = functionName;
 
 	this->policy = std::make_shared<ActorCritic>(inputCount, outputCount, actionStd);
 	this->policy->to(torch::Device(torch::kCUDA, 0));
@@ -50,7 +53,7 @@ float PPONetwork::decayActionStd(float decayRate, float minimum) {
 	return this->actionStd;
 }
 
-torch::Tensor PPONetwork::selectAction(torch::Tensor &state) {
+torch::Tensor PPONetwork::trainAction(torch::Tensor &state) {
 	ActResult act;
 	{
 		torch::NoGradGuard no_grad;
@@ -65,8 +68,25 @@ torch::Tensor PPONetwork::selectAction(torch::Tensor &state) {
 	return act.action.detach();
 }
 
-torch::Tensor PPONetwork::predict(torch::Tensor &state) {
-	return this->policy->act(state).action;
+unsigned int PPONetwork::predict(/* torch::Tensor &state */) {
+	// return this->policy->act(state).action;
+	return 0;
+}
+
+float PPONetwork::getPrediction(unsigned int predictIndex, unsigned int outputIndex) {
+	if (this->predictions.find(predictIndex) == this->predictions.end()) {
+		return 0.0f; // TODO return a null value
+	}
+
+	if (outputIndex >= this->predictions[predictIndex].size(0)) {
+		return 0.0f; // TODO return a null value
+	}
+
+	return this->predictions[predictIndex][outputIndex].item<float>();
+}
+
+void PPONetwork::finishPredict(unsigned int predictIndex) {
+	this->predictions.erase(predictIndex);
 }
 
 void PPONetwork::update() {

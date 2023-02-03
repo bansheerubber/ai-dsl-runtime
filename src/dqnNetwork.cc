@@ -34,7 +34,7 @@ float DQNNetwork::getPrediction(unsigned int predictIndex, unsigned int outputIn
 		return 0.0f; // TODO return a null value
 	}
 
-	if (outputIndex <= this->predictions[predictIndex].size()) {
+	if (outputIndex >= this->predictions[predictIndex].size()) {
 		return 0.0f; // TODO return a null value
 	}
 

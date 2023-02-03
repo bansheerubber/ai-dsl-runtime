@@ -10,6 +10,7 @@
 class PPONetwork {
 public:
 	PPONetwork(
+		std::string functionName,
 		unsigned int inputCount,
 		unsigned int outputCount,
 		float actorLearningRate,
@@ -22,8 +23,13 @@ public:
 
 	void setActionStd(float std);
 	float decayActionStd(float decayRate, float minimum);
-	torch::Tensor selectAction(torch::Tensor &state);
-	torch::Tensor predict(torch::Tensor &state);
+	torch::Tensor trainAction(torch::Tensor &state);
+
+	// forwards an input through the network, stores the result for later consumption by `getPrediction`
+	unsigned int predict(/*torch::Tensor &state*/);
+	float getPrediction(unsigned int predictIndex, unsigned int outputIndex);
+	void finishPredict(unsigned int predictIndex);
+
 	void update();
 
 	void singleTrain(float reward, bool isTerminal);
@@ -43,10 +49,14 @@ private:
 
 	float actionStd;
 
+	std::string functionName;
+
 	std::shared_ptr<ActorCritic> policy;
 	std::shared_ptr<ActorCritic> oldPolicy;
 
 	torch::optim::Adam* actorOptimizer;
 	torch::optim::Adam* criticOptimizer;
 	torch::nn::MSELoss loss;
+
+	std::unordered_map<unsigned int, torch::Tensor> predictions;
 };

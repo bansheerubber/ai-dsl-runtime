@@ -12,7 +12,7 @@ void airt_register_function(const char* name, unsigned int input_count, unsigned
 }
 
 unsigned int airt_handle_function_call(const char* function_name, float* inputs) {
-	std::shared_ptr<DQNNetwork> network = runtime.getNetwork(function_name);
+	std::shared_ptr<PPONetwork> network = runtime.getNetwork(function_name);
 	if (!network) {
 		return 0; // TODO return null value
 	}
@@ -21,7 +21,7 @@ unsigned int airt_handle_function_call(const char* function_name, float* inputs)
 }
 
 void airt_finish_function_call(const char* function_name, unsigned int predict_index) {
-	std::shared_ptr<DQNNetwork> network = runtime.getNetwork(function_name);
+	std::shared_ptr<PPONetwork> network = runtime.getNetwork(function_name);
 	if (!network) {
 		return;
 	}
@@ -30,7 +30,7 @@ void airt_finish_function_call(const char* function_name, unsigned int predict_i
 }
 
 int airt_predict_int(const char* function_name, unsigned int predict_index, unsigned int output_index) {
-	std::shared_ptr<DQNNetwork> network = runtime.getNetwork(function_name);
+	std::shared_ptr<PPONetwork> network = runtime.getNetwork(function_name);
 	if (!network) {
 		return 0;
 	}
@@ -39,7 +39,7 @@ int airt_predict_int(const char* function_name, unsigned int predict_index, unsi
 }
 
 float airt_predict_float(const char* function_name, unsigned int predict_index, unsigned int output_index) {
-	std::shared_ptr<DQNNetwork> network = runtime.getNetwork(function_name);
+	std::shared_ptr<PPONetwork> network = runtime.getNetwork(function_name);
 	if (!network) {
 		return 0.0f;
 	}
