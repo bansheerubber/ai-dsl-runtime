@@ -1,4 +1,7 @@
 #include "include.h"
+
+#include <ctype.h>
+
 #include "../runtime.h"
 
 static Runtime runtime;
@@ -11,7 +14,7 @@ void airt_register_function(const char* name, unsigned int input_count, unsigned
 	runtime.addFunctionNetwork(name, input_count, output_count);
 }
 
-unsigned int airt_handle_function_call(const char* function_name, float* inputs) {
+uint64_t airt_handle_function_call(const char* function_name, float* inputs) {
 	std::shared_ptr<PPONetwork> network = runtime.getNetwork(function_name);
 	if (!network) {
 		return 0; // TODO return null value
@@ -20,7 +23,7 @@ unsigned int airt_handle_function_call(const char* function_name, float* inputs)
 	return network->predict();
 }
 
-void airt_finish_function_call(const char* function_name, unsigned int predict_index) {
+void airt_finish_function_call(const char* function_name, uint64_t predict_index) {
 	std::shared_ptr<PPONetwork> network = runtime.getNetwork(function_name);
 	if (!network) {
 		return;
@@ -29,7 +32,7 @@ void airt_finish_function_call(const char* function_name, unsigned int predict_i
 	return network->finishPredict(predict_index);
 }
 
-int airt_predict_int(const char* function_name, unsigned int predict_index, unsigned int output_index) {
+int64_t airt_predict_int(const char* function_name, uint64_t predict_index, uint64_t output_index) {
 	std::shared_ptr<PPONetwork> network = runtime.getNetwork(function_name);
 	if (!network) {
 		return 0;
@@ -38,7 +41,7 @@ int airt_predict_int(const char* function_name, unsigned int predict_index, unsi
 	return (int)network->getPrediction(predict_index, output_index);
 }
 
-float airt_predict_float(const char* function_name, unsigned int predict_index, unsigned int output_index) {
+float airt_predict_float(const char* function_name, uint64_t predict_index, uint64_t output_index) {
 	std::shared_ptr<PPONetwork> network = runtime.getNetwork(function_name);
 	if (!network) {
 		return 0.0f;

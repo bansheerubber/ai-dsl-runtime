@@ -68,24 +68,24 @@ torch::Tensor PPONetwork::trainAction(torch::Tensor &state) {
 	return act.action.detach();
 }
 
-unsigned int PPONetwork::predict(/* torch::Tensor &state */) {
+uint64_t PPONetwork::predict(/* torch::Tensor &state */) {
 	// return this->policy->act(state).action;
 	return 0;
 }
 
-float PPONetwork::getPrediction(unsigned int predictIndex, unsigned int outputIndex) {
+float PPONetwork::getPrediction(uint64_t predictIndex, uint64_t outputIndex) {
 	if (this->predictions.find(predictIndex) == this->predictions.end()) {
 		return 0.0f; // TODO return a null value
 	}
 
-	if (outputIndex >= this->predictions[predictIndex].size(0)) {
+	if (outputIndex >= (uint64_t)this->predictions[predictIndex].size(0)) {
 		return 0.0f; // TODO return a null value
 	}
 
 	return this->predictions[predictIndex][outputIndex].item<float>();
 }
 
-void PPONetwork::finishPredict(unsigned int predictIndex) {
+void PPONetwork::finishPredict(uint64_t predictIndex) {
 	this->predictions.erase(predictIndex);
 }
 

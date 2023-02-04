@@ -26,9 +26,9 @@ public:
 	torch::Tensor trainAction(torch::Tensor &state);
 
 	// forwards an input through the network, stores the result for later consumption by `getPrediction`
-	unsigned int predict(/*torch::Tensor &state*/);
-	float getPrediction(unsigned int predictIndex, unsigned int outputIndex);
-	void finishPredict(unsigned int predictIndex);
+	uint64_t predict(/*torch::Tensor &state*/);
+	float getPrediction(uint64_t predictIndex, uint64_t outputIndex);
+	void finishPredict(uint64_t predictIndex);
 
 	void update();
 
@@ -58,5 +58,5 @@ private:
 	torch::optim::Adam* criticOptimizer;
 	torch::nn::MSELoss loss;
 
-	std::unordered_map<unsigned int, torch::Tensor> predictions;
+	std::unordered_map<uint64_t, torch::Tensor> predictions;
 };
