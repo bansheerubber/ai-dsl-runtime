@@ -10,7 +10,7 @@ void airt_init() {
 
 }
 
-void airt_register_function(const char* name, unsigned int input_count, unsigned int output_count) {
+void airt_register_function(const char* name, uint64_t input_count, uint64_t output_count) {
 	runtime.addFunctionNetwork(name, input_count, output_count);
 }
 
