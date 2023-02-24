@@ -19,6 +19,9 @@ PPONetwork::PPONetwork(
 
 	this->functionName = functionName;
 
+	this->inputCount = inputCount;
+	this->outputCount = outputCount;
+
 	this->policy = std::make_shared<ActorCritic>(inputCount, outputCount, actionStd);
 	this->policy->to(torch::Device(torch::kCUDA, 0));
 
@@ -68,9 +71,16 @@ torch::Tensor PPONetwork::trainAction(torch::Tensor &state) {
 	return act.action.detach();
 }
 
-uint64_t PPONetwork::predict(/* torch::Tensor &state */) {
-	// return this->policy->act(state).action;
-	return 0;
+uint64_t PPONetwork::predict(double* inputs) {
+	auto options = torch::TensorOptions().dtype(torch::kFloat64);
+	torch::Tensor inputTensor = torch::from_blob(inputs, { this->inputCount }, options);
+	inputTensor = inputTensor.toType(torch::kFloat32).to(torch::Device(torch::kCUDA, 0));
+
+	uint64_t predictionIndex = this->predictions.size();
+
+	this->predictions[predictionIndex] = this->trainAction(inputTensor);
+
+	return predictionIndex;
 }
 
 float PPONetwork::getPrediction(uint64_t predictIndex, uint64_t outputIndex) {

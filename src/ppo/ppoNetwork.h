@@ -26,7 +26,7 @@ public:
 	torch::Tensor trainAction(torch::Tensor &state);
 
 	// forwards an input through the network, stores the result for later consumption by `getPrediction`
-	uint64_t predict(/*torch::Tensor &state*/);
+	uint64_t predict(double* inputs);
 	float getPrediction(uint64_t predictIndex, uint64_t outputIndex);
 	void finishPredict(uint64_t predictIndex);
 
@@ -59,4 +59,7 @@ private:
 	torch::nn::MSELoss loss;
 
 	std::unordered_map<uint64_t, torch::Tensor> predictions;
+
+	unsigned int inputCount;
+	unsigned int outputCount;
 };
