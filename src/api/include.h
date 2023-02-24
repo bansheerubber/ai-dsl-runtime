@@ -13,4 +13,7 @@ extern "C" {
 
 	int64_t airt_predict_int(const char* function_name, uint64_t predict_index, uint64_t output_index);
 	float airt_predict_float(const char* function_name, uint64_t predict_index, uint64_t output_index);
+
+	void _airt_print_float(double number);
+	void _airt_print_int(uint16_t number);
 }

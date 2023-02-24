@@ -49,3 +49,11 @@ float airt_predict_float(const char* function_name, uint64_t predict_index, uint
 
 	return network->getPrediction(predict_index, output_index);
 }
+
+void _airt_print_float(double number) {
+	std::cout << "double: " << number << std::endl;
+}
+
+void _airt_print_int(uint16_t number) {
+	std::cout << "int: " << number << std::endl;
+}
