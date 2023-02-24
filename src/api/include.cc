@@ -7,20 +7,20 @@
 static Runtime runtime;
 
 void airt_init() {
-
+	std::cout << "airt initialized" << std::endl;
 }
 
 void airt_register_function(const char* name, uint64_t input_count, uint64_t output_count) {
 	runtime.addFunctionNetwork(name, input_count, output_count);
 }
 
-uint64_t airt_handle_function_call(const char* function_name, float* inputs) {
+uint64_t airt_handle_function_call(const char* function_name, double* inputs) {
 	std::shared_ptr<PPONetwork> network = runtime.getNetwork(function_name);
 	if (!network) {
 		return 0; // TODO return null value
 	}
 
-	return network->predict();
+	return network->predict(inputs);
 }
 
 void airt_finish_function_call(const char* function_name, uint64_t predict_index) {
@@ -41,7 +41,7 @@ int64_t airt_predict_int(const char* function_name, uint64_t predict_index, uint
 	return (int)network->getPrediction(predict_index, output_index);
 }
 
-float airt_predict_float(const char* function_name, uint64_t predict_index, uint64_t output_index) {
+double airt_predict_float(const char* function_name, uint64_t predict_index, uint64_t output_index) {
 	std::shared_ptr<PPONetwork> network = runtime.getNetwork(function_name);
 	if (!network) {
 		return 0.0f;
