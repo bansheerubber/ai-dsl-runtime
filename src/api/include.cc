@@ -6,8 +6,10 @@
 
 static Runtime runtime;
 
-void airt_init() {
+void airt_init(int (*reset_function)(), double (*tick_function)()) {
 	std::cout << "airt initialized" << std::endl;
+	runtime.setResetFunction(reset_function);
+	runtime.setTickFunction(tick_function);
 }
 
 void airt_register_function(const char* name, uint64_t input_count, uint64_t output_count) {
@@ -48,6 +50,12 @@ double airt_predict_float(const char* function_name, uint64_t predict_index, uin
 	}
 
 	return network->getPrediction(predict_index, output_index);
+}
+
+void airt_train() {
+	for (unsigned int i = 0; i < 5000; i++) {
+		double reward = runtime.callTickFunction();
+	}
 }
 
 void _airt_print_float(double number) {

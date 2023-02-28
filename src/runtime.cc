@@ -18,3 +18,19 @@ void Runtime::addFunctionNetwork(std::string functionName, unsigned int inputCou
 std::shared_ptr<PPONetwork> Runtime::getNetwork(std::string functionName) {
 	return this->networks[functionName];
 }
+
+void Runtime::setResetFunction(int (*resetFunction)()) {
+	this->resetFunction = resetFunction;
+}
+
+void Runtime::setTickFunction(double (*tickFunction)()) {
+	this->tickFunction = tickFunction;
+}
+
+void Runtime::callResetFunction() {
+	this->resetFunction();
+}
+
+double Runtime::callTickFunction() {
+	return this->tickFunction();
+}
