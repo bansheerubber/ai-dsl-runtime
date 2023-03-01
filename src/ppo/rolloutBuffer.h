@@ -8,4 +8,5 @@ struct RolloutBuffer {
 	std::vector<double> rewards;
 	std::vector<torch::Tensor> stateValues;
 	std::vector<bool> isTerminals;
+	unsigned int unrewardedActions;
 };

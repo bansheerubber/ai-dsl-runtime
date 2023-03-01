@@ -16,6 +16,8 @@ public:
 	void callResetFunction();
 	double callTickFunction();
 
+	void train();
+
 private:
 	// map function names to their neural networks
 	std::unordered_map<std::string, std::shared_ptr<PPONetwork>> networks;

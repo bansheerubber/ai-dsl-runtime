@@ -35,6 +35,8 @@ PPONetwork::PPONetwork(
 
 	this->oldPolicy = std::dynamic_pointer_cast<ActorCritic>(this->policy->clone());
 	this->oldPolicy->to(torch::Device(torch::kCUDA, 0));
+
+	this->buffer.unrewardedActions = 0;
 }
 
 void PPONetwork::setActionStd(float std) {
@@ -67,6 +69,8 @@ torch::Tensor PPONetwork::trainAction(torch::Tensor &state) {
 	this->buffer.actions.push_back(act.action);
 	this->buffer.logProbabilities.push_back(act.probability);
 	this->buffer.stateValues.push_back(act.critic);
+
+	this->buffer.unrewardedActions++;
 
 	return act.action.detach();
 }
@@ -158,17 +162,13 @@ void PPONetwork::singleTrain(float reward, bool isTerminal) {
 	this->buffer.isTerminals.push_back(isTerminal);
 }
 
-// use the current buffer state for backpropagation
 void PPONetwork::train(float reward, bool isTerminal) {
-	// TODO optimize this
-	for (size_t i = 0; i < this->buffer.actions.size(); i++) {
+	for (size_t i = 0; i < this->buffer.unrewardedActions; i++) {
 		this->buffer.rewards.push_back(reward);
 		this->buffer.isTerminals.push_back(isTerminal);
 	}
 
-	// TODO decay action STD
-
-	this->update();
+	this->buffer.unrewardedActions = 0;
 }
 
 void PPONetwork::setActorLearningRate(float learningRate) {

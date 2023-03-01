@@ -53,9 +53,7 @@ double airt_predict_float(const char* function_name, uint64_t predict_index, uin
 }
 
 void airt_train() {
-	for (unsigned int i = 0; i < 5000; i++) {
-		double reward = runtime.callTickFunction();
-	}
+	runtime.train();
 }
 
 void _airt_print_float(double number) {
