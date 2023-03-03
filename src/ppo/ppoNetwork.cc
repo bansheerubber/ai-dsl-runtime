@@ -22,7 +22,7 @@ PPONetwork::PPONetwork(
 	this->inputCount = inputCount;
 	this->outputCount = outputCount;
 
-	this->policy = std::make_shared<ActorCritic>(inputCount, outputCount, actionStd);
+	this->policy = std::make_shared<ActorCritic>(inputCount, outputCount, actionStd, false);
 	this->policy->to(torch::Device(torch::kCUDA, 0));
 
 	this->actorOptimizer = new torch::optim::Adam(
@@ -34,7 +34,7 @@ PPONetwork::PPONetwork(
 	);
 
 	this->oldPolicy = std::dynamic_pointer_cast<ActorCritic>(this->policy->clone());
-	this->oldPolicy->to(torch::Device(torch::kCUDA, 0));
+	this->oldPolicy->setCpuOnly(true);
 
 	this->buffer.unrewardedActions = 0;
 }
@@ -78,7 +78,8 @@ torch::Tensor PPONetwork::trainAction(torch::Tensor &state) {
 uint64_t PPONetwork::predict(double* inputs) {
 	auto options = torch::TensorOptions().dtype(torch::kFloat64);
 	torch::Tensor inputTensor = torch::from_blob(inputs, { this->inputCount }, options);
-	inputTensor = inputTensor.toType(torch::kFloat32).to(torch::Device(torch::kCUDA, 0));
+	inputTensor = inputTensor.toType(torch::kFloat32);
+	// inputTensor = inputTensor.to(torch::Device(torch::kCUDA, 0));
 
 	uint64_t predictionIndex = this->predictions.size();
 
@@ -104,6 +105,14 @@ void PPONetwork::finishPredict(uint64_t predictIndex) {
 }
 
 void PPONetwork::update() {
+	// move buffer to GPU
+	for (int64_t i = 0; i < this->buffer.rewards.size(); i++) {
+		this->buffer.states[i] = this->buffer.states[i].to(torch::Device(torch::kCUDA, 0));
+		this->buffer.actions[i] = this->buffer.actions[i].to(torch::Device(torch::kCUDA, 0));
+		this->buffer.logProbabilities[i] = this->buffer.logProbabilities[i].to(torch::Device(torch::kCUDA, 0));
+		this->buffer.stateValues[i] = this->buffer.stateValues[i].to(torch::Device(torch::kCUDA, 0));
+	}
+
 	std::vector<float> rewards;
 	float discontinuedReward = 0.0;
 	for (int64_t i = this->buffer.rewards.size() - 1; i >= 0; i--) {
@@ -114,6 +123,8 @@ void PPONetwork::update() {
 		discontinuedReward = this->buffer.rewards[i] + (this->gamma * discontinuedReward);
 		rewards.insert(rewards.begin(), discontinuedReward);
 	}
+
+	this->oldPolicy->setCpuOnly(false);
 
 	auto options = torch::TensorOptions().dtype(torch::kFloat32);
 	torch::Tensor rewardsTensor = torch::from_blob(rewards.data(), { (long)rewards.size() }, options);
@@ -148,6 +159,7 @@ void PPONetwork::update() {
 
 	this->oldPolicy.reset();
 	this->oldPolicy = std::dynamic_pointer_cast<ActorCritic>(this->policy->clone());
+	this->oldPolicy->setCpuOnly(true);
 
 	this->buffer.actions.clear();
 	this->buffer.states.clear();

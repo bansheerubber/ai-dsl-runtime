@@ -18,7 +18,7 @@ struct EvaluateResult {
 class ActorCritic : public torch::nn::Cloneable<ActorCritic> {
 public:
 	ActorCritic() {}
-	ActorCritic(unsigned int inputCount, unsigned int outputCount, float initStd);
+	ActorCritic(unsigned int inputCount, unsigned int outputCount, float initStd, bool cpuOnly);
 
 	void setActionStd(float std);
 	ActResult act(torch::Tensor &state);
@@ -30,9 +30,15 @@ public:
 	void reset() override;
 	void copy(ActorCritic &source);
 
+	void setCpuOnly(bool cpuOnly);
+
 private:
 	unsigned int inputCount;
 	unsigned int outputCount;
+
+	float std;
+
+	bool cpuOnly;
 
 	torch::Tensor actionVariance;
 };
