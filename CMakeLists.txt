@@ -9,10 +9,10 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
 
 add_subdirectory(src)
 
-add_executable(ai_dsl_runtime ${SRC_DSL} ${SRC_API} ${SRC_PPO})
+# add_executable(ai_dsl_runtime ${SRC_DSL} ${SRC_API} ${SRC_PPO})
 # target_link_libraries(ai_dsl_runtime "${TORCH_LIBRARIES}" boost_filesystem boost_system boost_iostreams)
-target_link_libraries(ai_dsl_runtime "${TORCH_LIBRARIES}")
-target_compile_options(ai_dsl_runtime PUBLIC -O2 -Wall -std=c++20 -Werror=return-type)
+# target_link_libraries(ai_dsl_runtime "${TORCH_LIBRARIES}")
+# target_compile_options(ai_dsl_runtime PUBLIC -O2 -Wall -std=c++20 -Werror=return-type)
 
 add_library(airt SHARED ${SRC_DSL} ${SRC_API} ${SRC_PPO})
 # target_link_libraries(airt "${TORCH_LIBRARIES}" boost_filesystem boost_system boost_iostreams)
