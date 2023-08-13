@@ -79,7 +79,6 @@ uint64_t PPONetwork::predict(double* inputs) {
 	auto options = torch::TensorOptions().dtype(torch::kFloat64);
 	torch::Tensor inputTensor = torch::from_blob(inputs, { this->inputCount }, options);
 	inputTensor = inputTensor.toType(torch::kFloat32);
-	// inputTensor = inputTensor.to(torch::Device(torch::kCUDA, 0));
 
 	uint64_t predictionIndex = this->predictions.size();
 
@@ -131,10 +130,21 @@ void PPONetwork::update() {
 	rewardsTensor = (rewardsTensor - rewardsTensor.mean()) / (rewardsTensor.std() + 1e-7);
 	rewardsTensor = rewardsTensor.to(torch::Device(torch::kCUDA, 0));
 
-	torch::Tensor oldStates = torch::squeeze(torch::stack(this->buffer.states, 0)).detach().to(torch::Device(torch::kCUDA, 0)).reshape({ -1, 1 });
-	torch::Tensor oldActions = torch::squeeze(torch::stack(this->buffer.actions, 0)).detach().to(torch::Device(torch::kCUDA, 0));
-	torch::Tensor oldLogProbabilities = torch::squeeze(torch::stack(this->buffer.logProbabilities, 0)).detach().to(torch::Device(torch::kCUDA, 0));
-	torch::Tensor oldStateValues = torch::squeeze(torch::stack(this->buffer.stateValues, 0)).detach().to(torch::Device(torch::kCUDA, 0));
+	torch::Tensor oldStates = torch::squeeze(
+		torch::stack(this->buffer.states, 0)
+	).detach().to(torch::Device(torch::kCUDA, 0));
+
+	torch::Tensor oldActions = torch::squeeze(
+		torch::stack(this->buffer.actions, 0)
+	).detach().to(torch::Device(torch::kCUDA, 0));
+
+	torch::Tensor oldLogProbabilities = torch::squeeze(
+		torch::stack(this->buffer.logProbabilities, 0)
+	).detach().to(torch::Device(torch::kCUDA, 0));
+
+	torch::Tensor oldStateValues = torch::squeeze(
+		torch::stack(this->buffer.stateValues, 0)
+	).detach().to(torch::Device(torch::kCUDA, 0));
 
 	torch::Tensor advantages = rewardsTensor.detach() - oldStateValues.detach();
 
