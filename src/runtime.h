@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+#include <fstream>
 #include <unordered_map>
 
 #include "ppo/ppoNetwork.h"
@@ -18,10 +20,15 @@ public:
 
 	void train();
 
+	void logSimulation(double car1Position, double car2Position);
+
 private:
 	// map function names to their neural networks
 	std::unordered_map<std::string, std::shared_ptr<PPONetwork>> networks;
 
 	int (*resetFunction)() = nullptr;
 	double (*tickFunction)() = nullptr;
+
+	std::ofstream file;
+	uint64_t fileIndex = 0;
 };

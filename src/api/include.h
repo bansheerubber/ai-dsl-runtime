@@ -18,4 +18,7 @@ extern "C" {
 
 	void _airt_print_float(double number);
 	void _airt_print_int(uint16_t number);
+
+	double _airt_random_float(double min, double max);
+	void _airt_log_simulation(double car1_position, double car2_position);
 }

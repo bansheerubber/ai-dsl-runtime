@@ -1,6 +1,7 @@
 #include "include.h"
 
 #include <ctype.h>
+#include <random>
 
 #include "../runtime.h"
 
@@ -62,4 +63,16 @@ void _airt_print_float(double number) {
 
 void _airt_print_int(uint16_t number) {
 	std::cout << "int: " << number << std::endl;
+}
+
+double _airt_random_float(double min, double max) {
+	static std::random_device rd;
+	static std::mt19937 e2(rd());
+
+	std::uniform_real_distribution<> dist(min, max);
+	return dist(e2);
+}
+
+void _airt_log_simulation(double car1_position, double car2_position) {
+	runtime.logSimulation(car1_position, car2_position);
 }

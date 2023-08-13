@@ -37,6 +37,11 @@ double Runtime::callTickFunction() {
 
 void Runtime::train() {
 	while (true) {
+		std::ostringstream filename;
+		filename << "log-" << this->fileIndex;
+
+		this->file = std::ofstream(filename.str());
+
 		double rewardTotal = 0;
 		unsigned int steps = 5000;
 
@@ -57,7 +62,15 @@ void Runtime::train() {
 
 		std::cout << rewardTotal / (float)steps << std::endl;
 
+		this->fileIndex++;
+		this->file.flush();
+		this->file.close();
+
 		// reset simulation state
 		this->callResetFunction();
 	}
+}
+
+void Runtime::logSimulation(double car1Position, double car2Position) {
+	this->file << car1Position << " " << car2Position << std::endl;
 }
